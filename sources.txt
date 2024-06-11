@@ -1,0 +1,12 @@
+==== CODE ====
+- python : https://python.org
+- flask  : https://github.com/pallets
+- flask-wtforms : https://github.com/wtforms
+- flask-sqlalchemy : https://github.com/pallets-eco
+- flask-login : https://github.com/maxcountryman/flask-login
+
+==== STATIC ====
+- logo  : https://flaticon.com
+- css   : https://getbootstrap.com
+- icons : https://icons.getbootstrap.com
+==
