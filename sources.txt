@@ -4,6 +4,7 @@
 - flask-wtforms : https://github.com/wtforms
 - flask-sqlalchemy : https://github.com/pallets-eco
 - flask-login : https://github.com/maxcountryman/flask-login
+- proxmoxer : https://github.com/proxmoxer
 
 ==== STATIC ====
 - logo  : https://flaticon.com

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <!-- BASE -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <!-- LINKS -->
+    <link rel="icon" type="image/png" href="{{ url_for('static',filename='img/logo.png') }}" />
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap-icons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/p_login.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/custom.css') }}"/>
+</head>
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
+    <main class="form-signin w-100 m-auto">
+        <form method="post">
+            <img class="mb-4 d-block mx-auto" src="{{ url_for('static',filename='img/logo.png') }}" alt="" width="100" height="100">
+            {{ form.csrf_token }}
+            <div class="form-floating mb-2">
+                {% if fpass %}{{ form.username(placeholder="username",class="form-control is-invalid") }}{% else %}{{ form.username(placeholder="username",class="form-control") }}{% endif %}
+                <label for="username">Username</label>
+            </div>
+            <div class="form-floating mb-4">
+                {% if fpass %}{{ form.password(placeholder="password",class="form-control is-invalid") }}{% else %}{{ form.password(placeholder="password",class="form-control") }}{% endif %}
+                <label for="password">Password</label>
+            </div>
+    
+            <button class="btn btn-primary w-100 py-2" type="submit">login</button>
+            <p class="mt-2 mb-5 text-body-secondary text-center">&copy; 2024 - PIL | {{app_version}}</p>
+        </form>
+    </main>
+    <!-- JAVASCRIPT -->
+    <script src="{{ url_for('static',filename='js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

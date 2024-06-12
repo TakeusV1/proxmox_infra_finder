@@ -22,3 +22,8 @@ class Configuration:
     SESSION_COOKIE_SECURE = False # SSL REQUIRED
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
+    
+pve_clusters = {
+    #1 : ["name", "<IPV4/DOMAIN>", "<username>@<realm>", "<password>", True], ## verify SSL True or False
+    1 : ["cluster01", "192.168.1.1", "pve_locator@pve", "password", False],
+}
