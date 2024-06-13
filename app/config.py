@@ -11,6 +11,12 @@ app_name = 'proxmox_infra_locator'
 app_version = 'V0.1'    
 app_release_date = '06/2024'
 
+ostype_kvm = {
+    'l24':['linux', 'Linux 2.4'],
+    'l26':['linux', 'Linux 2.6'],
+    'win10':['windows', 'Windows 10/2016/2019'],
+    'win11':['windows', 'Windows 11/2022/2025']
+}
 ostype_img = ['ubuntu', 'debian', 'alpine', 'windows']
 
 class Configuration:
@@ -28,5 +34,5 @@ class Configuration:
 pve_clusters = {
     #1 : ["name", "<IPV4/DOMAIN>", "<username>@<realm>", "<password>", True], ## verify SSL True or False
     1 : ["cluster01", "192.168.1.1", "pve_locator@pve", "password", False],
-    2 : ['lab', "192.168.200.10", "root@pam", "&Merguez", False]
+    #2 : ['lab', "192.168.200.10", "root@pam", "&Merguez", False]
 }

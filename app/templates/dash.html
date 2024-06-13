@@ -31,8 +31,8 @@
                     <ul class="list-group list-group-flush">
                     <li class="list-group-item"><b><u>VM ID</u> :</b> {{result['vmid']}}</li>
                     <li class="list-group-item"><b><u>VM NAME</u> :</b> {{result['name']}}</li>
-                    <li class="list-group-item"><b><u>VM OS</u> :</b> {%if result['config']['ostype'] in ostype_img %}<img src="/static/img/os/{{result['config']['ostype']}}.png" alt="" width="24" height="24">{%endif%} {{result['config']['ostype']}}</li>
-                    <li class="list-group-item"><b><u>Virtualization</u> :</b> <img src="{{ url_for('static',filename='img/virt/qemu.png') }}" alt="" width="24" height="24"> {{result['type']}}</li>
+                    <li class="list-group-item"><b><u>VM OS</u> :</b> {% if result['config']['ostype'] in ostype_kvm %}<img class="align-middle" src="/static/img/os/{{ostype_kvm[result['config']['ostype']][0]}}.png" alt="" width="25" height="25"> {{ostype_kvm[result['config']['ostype']][1]}}{% else %} {{result['config']['ostype']}}{% endif %}</li>
+                    <li class="list-group-item"><b><u>Virtualization</u> :</b> <img src="{{ url_for('static',filename='img/virt/qemu.png') }}" alt="" width="25" height="25"> {{result['type']}}</li>
                     <li class="list-group-item"><b><u>Cluster</u> :</b> {{cluster}}</li>
                     <li class="list-group-item"><b><u>Node</u> :</b> {{result['node']}}</li>
                     <li class="list-group-item"><b><u>TAGS</u> :</b> {% if result['config']['tags'] %}{{result['config']['tags']}}{%else%}N/A{%endif%}</li>
@@ -78,8 +78,8 @@
                     <ul class="list-group list-group-flush">
                     <li class="list-group-item"><b><u>VM ID</u> :</b> {{result['vmid']}}</li>
                     <li class="list-group-item"><b><u>VM NAME</u> :</b> {{result['name']}}</li>
-                    <li class="list-group-item"><b><u>VM OS</u> :</b> {%if result['config']['ostype'] in ostype_img %}<img src="/static/img/os/{{result['config']['ostype']}}.png" alt="" width="24" height="24">{%endif%} {{result['config']['ostype']}}</li>
-                    <li class="list-group-item"><b><u>Virtualization</u> :</b> <img src="{{ url_for('static',filename='img/virt/lxc.png') }}" alt="" width="24" height="24"> {{result['type']}}</li>
+                    <li class="list-group-item"><b><u>VM OS</u> :</b> {%if result['config']['ostype'] in ostype_img %}<img src="/static/img/os/{{result['config']['ostype']}}.png" alt="" width="25" height="25">{%endif%} {{result['config']['ostype']}}</li>
+                    <li class="list-group-item"><b><u>Virtualization</u> :</b> <img src="{{ url_for('static',filename='img/virt/lxc.png') }}" alt="" width="25" height="25"> {{result['type']}}</li>
                     <li class="list-group-item"><b><u>Cluster</u> :</b> {{cluster}}</li>
                     <li class="list-group-item"><b><u>Node</u> :</b> {{result['node']}}</li>
                     <li class="list-group-item"><b><u>TAGS</u> :</b> {% if result['config']['tags'] %}{{result['config']['tags']}}{%else%}N/A{%endif%}</li>
@@ -120,17 +120,16 @@
         </div><br>
         {% endif %}
 
-        {% if cloudinit_network%}
+        {% if cloudinit_network %}
         <div class="row mt-5">
             <div class="col-8"><h3>RAW RESPONSE</h3><code>{{result}}</code></div>
             <div class="col-4"><h3>CLOUDINIT NETWORK</h3><pre><code>{{cloudinit_network}}</code></pre></div>
         </div>
         {% else %}
         <div class="row mt-5">
-            <div class="col-12"><h3>RAW RESPONSE</h3><code>{{result}}</code></div>
+            {% if result %}<div class="col-12"><h3>RAW RESPONSE</h3><code>{{result}}</code></div>{% endif %}
         </div>
         {% endif %}
     </div>
 </div>
-
 {% endblock %}

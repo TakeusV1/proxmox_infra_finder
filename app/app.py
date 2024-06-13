@@ -104,7 +104,6 @@ def search_engine():
     form = SearchForm()
     if form.validate_on_submit():
         for cluster in active_cluster:
-
             # IF VM (qemu)
             if int(form.type.data) == 1: 
                 resources = cluster.cluster.resources.get()
@@ -120,8 +119,7 @@ def search_engine():
                     break          
             
             # IF CT (lxc)
-            elif int(form.type.data) == 2:
-                                    
+            elif int(form.type.data) == 2:           
                 resources = cluster.cluster.resources.get()
                 ct_cluster_info = next((resource for resource in resources if resource['type'] == 'lxc' and resource['name'] == form.name.data), None)
                 if ct_cluster_info != None:
@@ -136,7 +134,11 @@ def search_engine():
                     break        
 
             elif int(form.type.data) == 3:
-                pass
+                result = cluster.nodes(form.name.data).status.get()
+                result['network'] = cluster.nodes(form.name.data).network.get()
+                result['disks'] = cluster.nodes(form.name.data).disks.list.get()
+                result['version'] = cluster.nodes(form.name.data).version.get() 
+                print(result)
         
             if result != None:
                 break
@@ -154,5 +156,6 @@ def search_engine():
         type=int(form.type.data),
         cluster=cluster_name,
         ostype_img=ostype_img,
+        ostype_kvm=ostype_kvm,
         cloudinit_network=cloudinit_network,
     )
