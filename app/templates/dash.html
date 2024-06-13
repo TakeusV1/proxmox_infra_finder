@@ -47,8 +47,20 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/cpu.svg') }}"> <u>vCore</u> :</b> {{result['config']['cores']}} {% if result['status']=="running" %}<i class="text-secondary">({{(result['cpu']*100)|round(1)}}%)</i>{%endif%}</li>
                         <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/memory.svg') }}"> <u>RAM</u> :</b> {{result['config']['memory']}} MiB {% if result['status']=="running" %}<i class="text-secondary">({{'%0.2f'|format(result['mem']/1024/1024|float)}} MiB Used)</i>{%endif%}</li>
-                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/hdd.svg') }}"> <u>DISK</u> :</b> {{result['config']['rootfs']}}</li>
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/hdd.svg') }}"> <u>DISK</u> :</b> {{result['config']['scsi0']}}</li>
                         <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/cpu.svg') }}"> <u>CPU TYPE</u> :</b> {{result['config']['cpu']}}</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- NETWORKS INFORMATIONS -->
+            <div class="col-4">
+                <div class="card shadow-sm">
+                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/pci-card-network.svg') }}"> Network Informations</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b><u>Bridge</u> :</b> {{result['network']['bridge']}}</li>
+                        <li class="list-group-item"><b><u>IP Address</u> :</b> {{result['config']['ipconfig0']}}</li>
+                        <li class="list-group-item"><b><u>MAC Address</u> :</b> {{result['network']['virtio']}}</li>
+                        <li class="list-group-item"><b><u>Firewall</u> :</b> {{result['network']['firewall']}}</li>
                     </ul>
                 </div>
             </div>
@@ -107,7 +119,17 @@
             </div>
         </div><br>
         {% endif %}
-        <code>{{result}}</code>
+
+        {% if cloudinit_network%}
+        <div class="row mt-5">
+            <div class="col-8"><h3>RAW RESPONSE</h3><code>{{result}}</code></div>
+            <div class="col-4"><h3>CLOUDINIT NETWORK</h3><pre><code>{{cloudinit_network}}</code></pre></div>
+        </div>
+        {% else %}
+        <div class="row mt-5">
+            <div class="col-12"><h3>RAW RESPONSE</h3><code>{{result}}</code></div>
+        </div>
+        {% endif %}
     </div>
 </div>
 

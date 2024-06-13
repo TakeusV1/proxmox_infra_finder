@@ -100,6 +100,7 @@ def dashboard():
 @app.post('/dashboard')
 def search_engine():
     result = None
+    cloudinit_network = None
     form = SearchForm()
     if form.validate_on_submit():
         for cluster in active_cluster:
@@ -107,10 +108,15 @@ def search_engine():
             # IF VM (qemu)
             if int(form.type.data) == 1: 
                 resources = cluster.cluster.resources.get()
-                result = next((resource for resource in resources if resource['type'] == 'qemu' and resource['name'] == form.name.data), None)
-                if result != None:
-                    result['config'] = cluster.nodes(result['node']).qemu(result['vmid']).config.get()
-                    result['network'] = result['config']['net0'].split(',')
+                vm_cluster_info = next((resource for resource in resources if resource['type'] == 'qemu' and resource['name'] == form.name.data), None)
+                if vm_cluster_info != None:
+                    result = vm_cluster_info
+                    result['config'] = cluster.nodes(vm_cluster_info['node']).qemu(vm_cluster_info['vmid']).config.get()
+                    result['network'] = {item.split('=')[0]: item.split('=')[1] for item in result['config']['net0'].split(',')}
+                    try:
+                        cloudinit_network = cluster.nodes(vm_cluster_info['node']).qemu(vm_cluster_info['vmid']).cloudinit.dump.get(type='network')
+                    except:
+                        pass                        
                     break          
             
             # IF CT (lxc)
@@ -147,5 +153,6 @@ def search_engine():
         form=form,result=result,
         type=int(form.type.data),
         cluster=cluster_name,
-        ostype_img=ostype_img
+        ostype_img=ostype_img,
+        cloudinit_network=cloudinit_network,
     )
