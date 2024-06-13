@@ -11,6 +11,8 @@ app_name = 'proxmox_infra_locator'
 app_version = 'V0.1'    
 app_release_date = '06/2024'
 
+ostype_img = ['ubuntu', 'debian', 'alpine', 'windows']
+
 class Configuration:
     # openssl rand -hex 32
     SECRET_KEY = 'changeme'
@@ -26,4 +28,5 @@ class Configuration:
 pve_clusters = {
     #1 : ["name", "<IPV4/DOMAIN>", "<username>@<realm>", "<password>", True], ## verify SSL True or False
     1 : ["cluster01", "192.168.1.1", "pve_locator@pve", "password", False],
+    2 : ['cluster02', "172.31.211.236", "root@pam", "merguez", False]
 }

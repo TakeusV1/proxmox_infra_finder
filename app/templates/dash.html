@@ -2,18 +2,113 @@
 {% block content %}
 {% include '_nav.html' %}
 
+<section class="text-center bg-body-tertiary">
+    <div class="col-lg-6 col-md-8 mx-auto pb-4 pt-4">
+        <h1 class="fw-light">Search in INFRA</h1>
+        <p>
+            <form method="post">
+                {{ form.csrf_token }}
+                <div class="input-group">
+                    <span class="input-group-text">Search Engine</span>
+                    {{ form.name(placeholder="name",class="form-control") }}
+                    {{ form.type(placeholder="type",class="form-control") }}
+                    <button class="btn btn-success" type="submit">Search</button>
+                </div>
+            </form>
+        </p>
+    </div>
+</section>
 
-<div class="d-flex gap-2 justify-content-center py-5">
-    <form method="post">
-        {{ form.csrf_token }}
-        <div class="form-floating mb-2">
-            {{ form.name(placeholder="name",class="form-control") }}
-        </div>
-        <div class="form-floating mb-4">
-            {{ form.type(placeholder="name",class="form-control") }}
+<div class="py-5">
+    <div class="container">
+        {% if type == 1 %}
+        <!-- VM SEARCH -->
+        <div class="row">
+            <!-- BASE INFORMATIONS -->
+            <div class="col-4">
+                <div class="card shadow-sm">
+                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/server.svg') }}"> Base Informations</div>
+                    <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><b><u>VM ID</u> :</b> {{result['vmid']}}</li>
+                    <li class="list-group-item"><b><u>VM NAME</u> :</b> {{result['name']}}</li>
+                    <li class="list-group-item"><b><u>VM OS</u> :</b> {%if result['config']['ostype'] in ostype_img %}<img src="/static/img/os/{{result['config']['ostype']}}.png" alt="" width="24" height="24">{%endif%} {{result['config']['ostype']}}</li>
+                    <li class="list-group-item"><b><u>Virtualization</u> :</b> <img src="{{ url_for('static',filename='img/virt/qemu.png') }}" alt="" width="24" height="24"> {{result['type']}}</li>
+                    <li class="list-group-item"><b><u>Cluster</u> :</b> {{cluster}}</li>
+                    <li class="list-group-item"><b><u>Node</u> :</b> {{result['node']}}</li>
+                    <li class="list-group-item"><b><u>TAGS</u> :</b> {% if result['config']['tags'] %}{{result['config']['tags']}}{%else%}N/A{%endif%}</li>
+                    <li class="list-group-item"><b><u>POOL</u> :</b> {% if result['pool']%}{{result['pool']}}{%else%}N/A{%endif%}</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- HARDWARE INFORMATIONS -->
+            <div class="col-4">
+                <div class="card shadow-sm">
+                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/motherboard-fill.svg') }}"> Hardware Informations</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/cpu.svg') }}"> <u>vCore</u> :</b> {{result['config']['cores']}} {% if result['status']=="running" %}<i class="text-secondary">({{(result['cpu']*100)|round(1)}}%)</i>{%endif%}</li>
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/memory.svg') }}"> <u>RAM</u> :</b> {{result['config']['memory']}} MiB {% if result['status']=="running" %}<i class="text-secondary">({{'%0.2f'|format(result['mem']/1024/1024|float)}} MiB Used)</i>{%endif%}</li>
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/hdd.svg') }}"> <u>DISK</u> :</b> {{result['config']['rootfs']}}</li>
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/cpu.svg') }}"> <u>CPU TYPE</u> :</b> {{result['config']['cpu']}}</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <button class="btn btn-primary w-100 py-2" type="submit">search</button>
-    </form>
+
+
+        {% elif type == 2 %}
+        <!-- CT SEARCH -->
+        <div class="row">
+            <!-- BASE INFORMATIONS -->
+            <div class="col-4">
+                <div class="card shadow-sm">
+                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/server.svg') }}"> Base Informations</div>
+                    <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><b><u>VM ID</u> :</b> {{result['vmid']}}</li>
+                    <li class="list-group-item"><b><u>VM NAME</u> :</b> {{result['name']}}</li>
+                    <li class="list-group-item"><b><u>VM OS</u> :</b> {%if result['config']['ostype'] in ostype_img %}<img src="/static/img/os/{{result['config']['ostype']}}.png" alt="" width="24" height="24">{%endif%} {{result['config']['ostype']}}</li>
+                    <li class="list-group-item"><b><u>Virtualization</u> :</b> <img src="{{ url_for('static',filename='img/virt/lxc.png') }}" alt="" width="24" height="24"> {{result['type']}}</li>
+                    <li class="list-group-item"><b><u>Cluster</u> :</b> {{cluster}}</li>
+                    <li class="list-group-item"><b><u>Node</u> :</b> {{result['node']}}</li>
+                    <li class="list-group-item"><b><u>TAGS</u> :</b> {% if result['config']['tags'] %}{{result['config']['tags']}}{%else%}N/A{%endif%}</li>
+                    <li class="list-group-item"><b><u>POOL</u> :</b> {{result['pool']}}</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- HARDWARE INFORMATIONS -->
+            <div class="col-4">
+                <div class="card shadow-sm">
+                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/motherboard-fill.svg') }}"> Hardware Informations</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/cpu.svg') }}"> <u>vCore</u> :</b> {{result['config']['cores']}} {% if result['status']=="running" %}<i class="text-secondary">({{(result['cpu']*100)|round(1)}}%)</i>{%endif%}</li>
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/memory.svg') }}"> <u>RAM</u> :</b> {{result['config']['memory']}} MiB {% if result['status']=="running" %}<i class="text-secondary">({{'%0.2f'|format(result['mem']/1024/1024|float)}} MiB Used)</i>{%endif%}</li>
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/hdd.svg') }}"> <u>SWAP</u> :</b> {{result['config']['swap']}} MiB {% if result['status']=="running" %}<i class="text-secondary">({{'%0.2f'|format(result['swap']/1024/1024|float)}} MiB Used)</i>{%endif%}</li>
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/hdd.svg') }}"> <u>DISK</u> :</b> {{result['config']['rootfs']}}</li>
+                        <li class="list-group-item"><b><u>ARCH</u> :</b> {{result['config']['arch']}}</li>
+                        <li class="list-group-item"><b><u>Features</u> :</b> {{result['config']['features']}}</li>
+                        <li class="list-group-item"><b><u>unprivileged</u> :</b> {{result['config']['unprivileged']}}</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- NETWORKS INFORMATIONS -->
+            <div class="col-4">
+                <div class="card shadow-sm">
+                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/pci-card-network.svg') }}"> Network Informations</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b><u>Name</u> :</b> {{result['network']['name']}}</li>
+                        <li class="list-group-item"><b><u>Bridge</u> :</b> {{result['network']['bridge']}}</li>
+                        <li class="list-group-item"><b><u>IP Address</u> :</b> {{result['network']['ip']}}</li>
+                        <li class="list-group-item"><b><u>MAC Address</u> :</b> {{result['network']['hwaddr']}}</li>
+                        <li class="list-group-item"><b><u>Gateway</u> :</b> {% if result['network']['ip']=='dhcp'%}dhcp{%else%}{{result['network']['gw']}}{%endif%}</li>
+                        <li class="list-group-item"><b><u>Firewall</u> :</b> {{result['network']['firewall']}}</li>
+                        <li class="list-group-item"><b><u>Type</u> :</b> {{result['network']['type']}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div><br>
+        {% endif %}
+        <code>{{result}}</code>
+    </div>
 </div>
+
 {% endblock %}

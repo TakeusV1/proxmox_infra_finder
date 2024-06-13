@@ -91,49 +91,61 @@ def logout():
     logout_user()
     return redirect(url_for("home"))        
 
-@app.route("/dashboard",methods=['GET','POST'])
+@app.route("/dashboard")
 @login_required
 def dashboard():
     form = SearchForm()
+    return render_template("dash.html",title="PIL - Dashboard",app_version=app_version,form=form)
+
+@app.post('/dashboard')
+def search_engine():
+    result = None
+    form = SearchForm()
     if form.validate_on_submit():
         for cluster in active_cluster:
+
+            # IF VM (qemu)
+            if int(form.type.data) == 1: 
+                resources = cluster.cluster.resources.get()
+                result = next((resource for resource in resources if resource['type'] == 'qemu' and resource['name'] == form.name.data), None)
+                if result != None:
+                    result['config'] = cluster.nodes(result['node']).qemu(result['vmid']).config.get()
+                    result['network'] = result['config']['net0'].split(',')
+                    break          
             
-            if int(form.type.data) == 1:
-                vm_details = None
-                for node in cluster.nodes.get():
-                    node_name = node['node']
-                    for vm in cluster.nodes(node['node']).qemu.get():
-                        if vm.get('name') == form.name.data:
-                            vm_details = cluster.nodes(node_name).qemu(vm['vmid']).status.current.get()
-                            vm_details['node'] = node_name
-                            vm_details['config'] = cluster.nodes(node_name).qemu(vm['vmid']).config.get()
-                            vm_details['pool'] = cluster.pools.get()
-                            break
-                    if vm_details:
-                        return vm_details                
-                return redirect(url_for("dashboard"))
-            
+            # IF CT (lxc)
             elif int(form.type.data) == 2:
-                ct_details = None
-                for node in cluster.nodes.get():
-                    node_name = node['node']
-                    for ct in cluster.nodes(node['node']).lxc.get():
-                        if ct.get('name') == form.name.data:
-                            container_details = cluster.nodes(node_name).lxc(ct['vmid']).status.current.get()
-                            container_details['node'] = node_name
-                            container_details['config'] = cluster.nodes(node_name).lxc(ct['vmid']).config.get()
-                            container_details['pool'] = cluster.pools.get() 
-                            break
-                    if container_details:
-                        return container_details                
-                return redirect(url_for("dashboard"))
+                                    
+                resources = cluster.cluster.resources.get()
+                ct_cluster_info = next((resource for resource in resources if resource['type'] == 'lxc' and resource['name'] == form.name.data), None)
+                if ct_cluster_info != None:
+                    result = cluster.nodes(ct_cluster_info['node']).lxc(ct_cluster_info['vmid']).status.current.get()
+                    result['config'] = cluster.nodes(ct_cluster_info['node']).lxc(ct_cluster_info['vmid']).config.get()    
+                    result['network'] = {item.split('=')[0]: item.split('=')[1] for item in result['config']['net0'].split(',')}    
+                    result['node'] = ct_cluster_info['node']
+                    try:
+                        result['pool'] = ct_cluster_info['pool']
+                    except:
+                        result['pool'] = "N/A"
+                    break        
 
             elif int(form.type.data) == 3:
                 pass
-            
-    return render_template("dash.html",title="PIL - Dashboard",app_version=app_version,is_dash=True,form=form)
-
-@app.route("/dashboard/search")
-@login_required
-def search_engine():
-    return 'ok'
+        
+            if result != None:
+                break
+        
+        if result == None:
+            return redirect(url_for('dashboard'))
+        
+    cluster_name = cluster.cluster.status.get()[0]['name']
+    
+    return render_template(
+        "dash.html",
+        title="PIL - Dashboard",
+        app_version=app_version,
+        form=form,result=result,
+        type=int(form.type.data),
+        cluster=cluster_name,
+        ostype_img=ostype_img
+    )
