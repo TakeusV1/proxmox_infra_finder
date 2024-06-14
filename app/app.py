@@ -22,12 +22,6 @@ app.config.from_object(Configuration)
 
 db = SQLAlchemy(app)
 
-active_cluster = []
-for cluster in pve_clusters.values():
-    print(f"--> Cluster {cluster[0]} added.")
-    cluster[0] = ProxmoxAPI(cluster[1], user=cluster[2], password=cluster[3], verify_ssl=cluster[4])
-    active_cluster.append(cluster[0])
-
 #############################
 ###### DATABASE MODELS ######
 
@@ -103,7 +97,16 @@ def search_engine():
     cloudinit_network = None
     form = SearchForm()
     if form.validate_on_submit():
-        for cluster in active_cluster:
+        
+        pve_clusters = []
+        for cluster in clusters.values():
+            print(f"--> Cluster {cluster[0]} added.")
+            try:
+                pve_clusters.append(ProxmoxAPI(cluster[1], user=cluster[2], password=cluster[3], verify_ssl=cluster[4]))
+            except:
+                print(f"--> Cluster {cluster[0]} not available.")
+
+        for cluster in pve_clusters:
             # IF VM (qemu)
             if int(form.type.data) == 1: 
                 resources = cluster.cluster.resources.get()
@@ -134,11 +137,14 @@ def search_engine():
                     break        
 
             elif int(form.type.data) == 3:
-                result = cluster.nodes(form.name.data).status.get()
-                result['network'] = cluster.nodes(form.name.data).network.get()
-                result['disks'] = cluster.nodes(form.name.data).disks.list.get()
-                result['version'] = cluster.nodes(form.name.data).version.get() 
-                print(result)
+                try:
+                    result = cluster.nodes(form.name.data).status.get()
+                    result['network'] = cluster.nodes(form.name.data).network.get()
+                    result['disks'] = cluster.nodes(form.name.data).disks.list.get()
+                    result['version'] = cluster.nodes(form.name.data).version.get() 
+                    print(result)
+                except:
+                    pass
         
             if result != None:
                 break

@@ -31,8 +31,9 @@ class Configuration:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
     
-pve_clusters = {
+clusters = {
     #1 : ["name", "<IPV4/DOMAIN>", "<username>@<realm>", "<password>", True], ## verify SSL True or False
-    1 : ["cluster01", "192.168.1.1", "pve_locator@pve", "password", False],
-    #2 : ['lab', "192.168.200.10", "root@pam", "&Merguez", False]
+    1 : ["taklab", "192.168.1.1", "pve_locator@pve", "password", False],
+    2 : ['pve-test-01', "192.168.1.59", "root@pam", "password", False],
+    3 : ['pve-test-02', "192.168.1.60", "root@pam", "password", False]
 }

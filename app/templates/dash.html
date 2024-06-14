@@ -27,7 +27,12 @@
             <!-- BASE INFORMATIONS -->
             <div class="col-4">
                 <div class="card shadow-sm">
-                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/server.svg') }}"> Base Informations</div>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div><img src="{{ url_for('static',filename='img/icons/server.svg') }}"> Base Informations</div>
+                        <div class="ms-auto">
+                            {% if result['uptime'] > 0 %}🟢 Online{% else %}🔴 Offline{% endif %}
+                        </div>
+                    </div>
                     <ul class="list-group list-group-flush">
                     <li class="list-group-item"><b><u>VM ID</u> :</b> {{result['vmid']}}</li>
                     <li class="list-group-item"><b><u>VM NAME</u> :</b> {{result['name']}}</li>
@@ -60,7 +65,7 @@
                         <li class="list-group-item"><b><u>Bridge</u> :</b> {{result['network']['bridge']}}</li>
                         <li class="list-group-item"><b><u>IP Address</u> :</b> {{result['config']['ipconfig0']}}</li>
                         <li class="list-group-item"><b><u>MAC Address</u> :</b> {{result['network']['virtio']}}</li>
-                        <li class="list-group-item"><b><u>Firewall</u> :</b> {{result['network']['firewall']}}</li>
+                        <li class="list-group-item"><b><u>Firewall</u> :</b> {% if result['network']['firewall'] %}True{%else%}False{%endif%}</li>
                     </ul>
                 </div>
             </div>
@@ -74,7 +79,12 @@
             <!-- BASE INFORMATIONS -->
             <div class="col-4">
                 <div class="card shadow-sm">
-                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/server.svg') }}"> Base Informations</div>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div><img src="{{ url_for('static',filename='img/icons/server.svg') }}"> Base Informations</div>
+                        <div class="ms-auto">
+                            {% if result['uptime'] > 0 %}🟢 Online{% else %}🔴 Offline{% endif %}
+                        </div>
+                    </div>
                     <ul class="list-group list-group-flush">
                     <li class="list-group-item"><b><u>VM ID</u> :</b> {{result['vmid']}}</li>
                     <li class="list-group-item"><b><u>VM NAME</u> :</b> {{result['name']}}</li>
@@ -98,7 +108,7 @@
                         <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/hdd.svg') }}"> <u>DISK</u> :</b> {{result['config']['rootfs']}}</li>
                         <li class="list-group-item"><b><u>ARCH</u> :</b> {{result['config']['arch']}}</li>
                         <li class="list-group-item"><b><u>Features</u> :</b> {{result['config']['features']}}</li>
-                        <li class="list-group-item"><b><u>unprivileged</u> :</b> {{result['config']['unprivileged']}}</li>
+                        <li class="list-group-item"><b><u>unprivileged</u> :</b> {% if result['config']['unprivileged'] %}True{%else%}False{%endif%}</li>
                     </ul>
                 </div>
             </div>
@@ -112,7 +122,7 @@
                         <li class="list-group-item"><b><u>IP Address</u> :</b> {{result['network']['ip']}}</li>
                         <li class="list-group-item"><b><u>MAC Address</u> :</b> {{result['network']['hwaddr']}}</li>
                         <li class="list-group-item"><b><u>Gateway</u> :</b> {% if result['network']['ip']=='dhcp'%}dhcp{%else%}{{result['network']['gw']}}{%endif%}</li>
-                        <li class="list-group-item"><b><u>Firewall</u> :</b> {{result['network']['firewall']}}</li>
+                        <li class="list-group-item"><b><u>Firewall</u> :</b> {% if result['network']['firewall'] %}True{%else%}False{%endif%}</li>
                         <li class="list-group-item"><b><u>Type</u> :</b> {{result['network']['type']}}</li>
                     </ul>
                 </div>
