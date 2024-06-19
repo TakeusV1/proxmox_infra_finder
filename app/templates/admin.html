@@ -1,0 +1,88 @@
+{% extends '_base.html' %}
+{% block content %}
+{% include '_nav.html' %}
+
+<div class="container pt-4">
+    <div class="row">
+        <div class="col-4">
+            <div class="card shadow-sm">
+                <div class="card-header">APP Informations</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><b><u>Name</u> :</b> {{app_name}}</li>
+                    <li class="list-group-item"><b><u>Debug</u> :</b> {{app_debug}}</li>
+                    <li class="list-group-item"><b><u>Version</u> :</b> {{app_version}}</li>
+                    <li class="list-group-item"><b><u>Release</u> :</b> {{app_release_date}}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    Users Management
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">username</th>
+                            <th scope="col">Admin</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        {% for user in db_users %}
+                        <tr>
+                            <th scope="row">{{user.id}}</th>
+                            <td>{{user.username}}</td>
+                            <td>{{user.admin}}</td>
+                            <td>
+                                <a href="admin/user/{{user.id}}/delete" class="btn btn-sm btn-danger">delete</a>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+                <div class="card-footer">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#adduser">add user</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="adduser" tabindex="-1" aria-labelledby="adduser-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="adduser-label">Add USER</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('add_user') }}" method="post">
+                <div class="modal-body">
+                    {{ form_create.csrf_token }}
+                    <div class="form-floating mb-2">
+                        {{ form_create.username(placeholder="username",class="form-control") }}
+                        <label for="username">Username</label>
+                    </div>
+                    <div class="form-floating mb-4">
+                        {{ form_create.password(placeholder="password",class="form-control") }}
+                        <label for="password">Password</label>
+                    </div>
+                    <div class="form-check">
+                        {{ form_create.is_admin(class="form-check-input") }}
+                        <label class="form-check-label" for="is_admin">Admin</label>
+                    </div>                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-success" type="submit">create user</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

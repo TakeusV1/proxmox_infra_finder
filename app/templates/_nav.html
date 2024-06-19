@@ -11,6 +11,13 @@
                 </li> -->
             </ul>
             <div class="d-flex">
+                {% if current_user.admin %}
+                    {% if admin_dash %}
+                    <a class="btn btn-outline-success" href="{{ url_for('dashboard') }}">Dashboard</a>&ensp;
+                    {%else%}
+                    <a class="btn btn-outline-warning" href="{{ url_for('admin') }}">Admin</a>&ensp;
+                    {%endif%}
+                {% endif %}
                 <a class="btn btn-outline-danger" href="{{ url_for('logout') }}">Logout</a>
             </div>
         </div>

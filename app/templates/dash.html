@@ -30,7 +30,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div><img src="{{ url_for('static',filename='img/icons/server.svg') }}"> Base Informations</div>
                         <div class="ms-auto">
-                            {% if result['uptime'] > 0 %}🟢 Online{% else %}🔴 Offline{% endif %}
+                            {% if result['uptime'] > 0 %}🟢 Online <i class="text-muted">({%if result['uptime']/60<60%}{{(result['uptime']/60)|round|int}}M{%elif result['uptime']/3600<96%}{{(result['uptime']/3600)|round|int}}H{% else %}{{(result['uptime']/86400)|round|int}}D{% endif %})</i>{% else %}🔴 Offline{% endif %}
                         </div>
                     </div>
                     <ul class="list-group list-group-flush">
@@ -63,7 +63,7 @@
                     <div class="card-header"><img src="{{ url_for('static',filename='img/icons/pci-card-network.svg') }}"> Network Informations</div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><b><u>Bridge</u> :</b> {{result['network']['bridge']}}</li>
-                        <li class="list-group-item"><b><u>IP Address</u> :</b> {{result['config']['ipconfig0']}}</li>
+                        <li class="list-group-item"><b><u>IP Address</u> :</b> {% if result['config']['ipconfig0'] %}{{result['config']['ipconfig0']}}{%else%}N/A{%endif%}</li>
                         <li class="list-group-item"><b><u>MAC Address</u> :</b> {{result['network']['virtio']}}</li>
                         <li class="list-group-item"><b><u>Firewall</u> :</b> {% if result['network']['firewall'] %}True{%else%}False{%endif%}</li>
                     </ul>
@@ -82,7 +82,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div><img src="{{ url_for('static',filename='img/icons/server.svg') }}"> Base Informations</div>
                         <div class="ms-auto">
-                            {% if result['uptime'] > 0 %}🟢 Online{% else %}🔴 Offline{% endif %}
+                            {% if result['uptime'] > 0 %}🟢 Online <i class="text-muted">({%if result['uptime']/60<60%}{{(result['uptime']/60)|round|int}}M{%elif result['uptime']/3600<96%}{{(result['uptime']/3600)|round|int}}H{% else %}{{(result['uptime']/86400)|round|int}}D{% endif %})</i>{% else %}🔴 Offline{% endif %}
                         </div>
                     </div>
                     <ul class="list-group list-group-flush">
@@ -127,6 +127,76 @@
                     </ul>
                 </div>
             </div>
+        </div><br>
+        {% elif type == 3 %}
+        <!-- HOST SEARCH -->
+        <div class="row">
+            <!-- BASE INFORMATIONS -->
+            <div class="col-4">
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div><img src="{{ url_for('static',filename='img/icons/server.svg') }}"> Base Informations</div>
+                        <div class="ms-auto">
+                            {% if result['uptime'] > 0 %}🟢 Online <i class="text-muted">({%if result['uptime']/60<60%}{{(result['uptime']/60)|round|int}}M{%elif result['uptime']/3600<96%}{{(result['uptime']/3600)|round|int}}H{% else %}{{(result['uptime']/86400)|round|int}}D{% endif %})</i>{% else %}🔴 Offline{% endif %}
+                        </div>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b><u>Hostname</u> :</b> {{result['node']}}</li>
+                        <li class="list-group-item"><b><u>Cluster</u> :</b> {{cluster}}</li>
+                        <li class="list-group-item"><b><u>Release</u> :</b> PVE {{result['version']['version']}}</li>
+                        <li class="list-group-item"><b><u>Kernel</u> :</b> {{result['status']['current-kernel']['release']}}</li>
+                        <li class="list-group-item"><b><u>Architecture</u> :</b> {{result['status']['current-kernel']['machine']}}</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- HARDWARE INFORMATIONS -->
+            <div class="col-8">
+                <div class="card shadow-sm">
+                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/motherboard-fill.svg') }}"> Hardware Informations</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/cpu.svg') }}"> <u>CPU</u> :</b> {{result['status']['cpuinfo']['model']}} <i>({{result['status']['cpuinfo']['sockets']}}) {% if result['uptime']!=0 %}<i class="text-secondary">({{(result['cpu']*100)|round(1)}}%)</i>{%endif%}</i>
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/memory.svg') }}"> <u>RAM</u> :</b> {{'%0.1f'|format(result['status']['memory']['total']/1024/1024/1024 |float)}} GB {% if result['uptime']!=0 %}<i class="text-secondary">({{'%0.2f'|format(result['status']['memory']['used']/1024/1024/1024|float)}} GB Used)</i>{%endif%}</li>
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/hdd.svg') }}"> <u>SWAP</u> :</b> {{'%0.1f'|format(result['status']['swap']['total']/1024/1024/1024 |float)}} GB {% if result['uptime']!=0 %}<i class="text-secondary">({{'%0.2f'|format(result['status']['swap']['used']/1024/1024/1024|float)}} GB Used)</i>{%endif%}</li>
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/hdd.svg') }}"> <u>DISK</u> :</b> {{'%0.1f'|format(result['status']['rootfs']['total']/1024/1024/1024 |float)}} GB {% if result['uptime']!=0 %}<i class="text-secondary">({{'%0.2f'|format(result['status']['rootfs']['used']/1024/1024/1024|float)}} GB Used)</i>{%endif%}</li>     
+                        <li class="list-group-item"><b><img src="{{ url_for('static',filename='img/icons/graph-up.svg') }}"> <u>Load Average</u> :</b> {{result['status']['loadavg']}}
+                    </ul>
+                </div>
+            </div>
+        </div><br>
+        <!-- NETWORKS INFORMATIONS -->
+        <h3>Networks</h3>
+        <div class="row">
+            {% for interface in result['network'] %}
+            <div class="col-3">
+                <div class="card shadow-sm">
+                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/pci-card-network.svg') }}"> Interface <b>{{interface['iface']}}</b></div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b><u>Name</u> :</b> {{interface['iface']}}</li>
+                        <li class="list-group-item"><b><u>Type</u> :</b> {{interface['type']}}</li>
+                        <li class="list-group-item"><b><u>IP Address</u> :</b> {%if interface['address']%}{{interface['address']}}/{{interface['netmask']}} <i>({{interface['method']}})</i>{%else%}N/A{%endif%}</li>
+                        <li class="list-group-item"><b><u>Gateway</u> :</b> {% if interface['address']%}{{interface['gateway']}}{%else%}N/A{%endif%}</li>
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        </div><br>
+        <!-- DISKS INFORMATIONS -->
+        <h3>Disks</h3>
+        <div class="row">
+            {% for disk in result['disks'] %}
+            <div class="col-4">
+                <div class="card shadow-sm">
+                    <div class="card-header"><img src="{{ url_for('static',filename='img/icons/hdd.svg') }}"> Disk <b>{{disk['model']}}</b></div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b><u>Model</u> :</b> {{disk['model']}}</li>
+                        <li class="list-group-item"><b><u>Serial</u> :</b> {{disk['serial']}}</li>
+                        <li class="list-group-item"><b><u>Type</u> :</b> {{disk['type']}} {%if disk['type']=='hdd'%}({{disk['rpm']}} RPM){%endif%}</li>
+                        <li class="list-group-item"><b><u>SMART</u> :</b> {{disk['health']}} <i>{%if disk['type']=='hdd'%}({{disk['wearout']}}%){%endif%}</i></li>
+                        <li class="list-group-item"><b><u>Size</u> :</b> {{'%0.1f'|format(disk['size']/1024/1024/1024)|float}} GB</li>
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
         </div><br>
         {% endif %}
 

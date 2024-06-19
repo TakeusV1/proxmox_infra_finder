@@ -7,7 +7,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField
+from wtforms import StringField, PasswordField, SelectField, BooleanField
 from wtforms.validators import DataRequired, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -44,6 +44,11 @@ class AuthForm(FlaskForm):
 class SearchForm(FlaskForm):
     name = StringField(validators=[DataRequired(),Length(max=128)])
     type = SelectField(validators=[DataRequired()],choices=[(1, 'VM'), (2, 'CT'), (3, 'Host')])
+
+class CreateForm(FlaskForm):
+    username = StringField(validators=[DataRequired(),Length(max=128)])
+    password = PasswordField(validators=[DataRequired(),Length(max=128)])
+    is_admin = BooleanField(validators=[])
 
 #############################
 ######## SYSTEM ROUTES ######
@@ -92,6 +97,7 @@ def dashboard():
     return render_template("dash.html",title="PIL - Dashboard",app_version=app_version,form=form)
 
 @app.post('/dashboard')
+@login_required
 def search_engine():
     result = None
     cloudinit_network = None
@@ -137,14 +143,14 @@ def search_engine():
                     break        
 
             elif int(form.type.data) == 3:
-                try:
-                    result = cluster.nodes(form.name.data).status.get()
+                resources = cluster.cluster.resources.get()
+                host_cluster_info = next((resource for resource in resources if resource['type'] == 'node' and resource['node'] == form.name.data), None)
+                if host_cluster_info != None:
+                    result = host_cluster_info
+                    result['status'] = cluster.nodes(form.name.data).status.get()
                     result['network'] = cluster.nodes(form.name.data).network.get()
                     result['disks'] = cluster.nodes(form.name.data).disks.list.get()
                     result['version'] = cluster.nodes(form.name.data).version.get() 
-                    print(result)
-                except:
-                    pass
         
             if result != None:
                 break
@@ -165,3 +171,49 @@ def search_engine():
         ostype_kvm=ostype_kvm,
         cloudinit_network=cloudinit_network,
     )
+
+@app.route('/dashboard/admin')
+@login_required
+def admin():
+    if current_user.admin == False:
+        return abort(403)
+    
+    db_users = User.query.all()
+    form_create = CreateForm()
+    
+    return render_template(
+        "admin.html",
+        title="PIL - Admin",
+        app_name=app_name,
+        app_debug=app_debug,
+        app_version=app_version,
+        app_release_date=app_release_date,
+        admin_dash=True,
+        db_users=db_users,
+        form_create=form_create,
+    )
+
+@app.post('/dashboard/admin/user/add')
+@login_required
+def add_user():
+    if current_user.admin == False:
+        return abort(403)
+    
+    form = CreateForm()
+    if form.validate_on_submit():
+        if User.query.filter_by(username=form.username.data).first():
+            return 'user exist'
+        db.session.add(User(username=form.username.data,password=generate_password_hash(form.password.data),admin=form.is_admin.data))
+        db.session.commit()
+        return redirect(url_for('admin'))
+    return 'problem ):'
+
+@app.get('/dashboard/admin/user/<int:userid>/delete')
+@login_required
+def rem_user(userid):
+    if current_user.admin == False:
+        return abort(403)
+
+    db.session.delete(User.query.filter_by(id=userid).first())
+    db.session.commit()
+    return redirect(url_for('admin'))

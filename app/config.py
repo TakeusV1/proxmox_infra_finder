@@ -8,7 +8,7 @@ app_debug = True
 app_maintenance = False
 
 app_name = 'proxmox_infra_locator'
-app_version = 'V0.1'    
+app_version = 'V1.0'    
 app_release_date = '06/2024'
 
 ostype_kvm = {
