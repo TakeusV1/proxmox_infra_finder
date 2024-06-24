@@ -4,7 +4,7 @@
 ## Features
 - Locate VM *(QEMU)*
 - Locate CT *(LXC)*
-- Locate Nodes *(PVE)*
+- Locate Node   *(PVE)*
 - Locate across multiple clusters
 - Informations *(Base, Hardware, Network)*
 ## Screenshots
